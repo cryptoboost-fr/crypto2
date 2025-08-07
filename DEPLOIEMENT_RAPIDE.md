@@ -52,6 +52,8 @@ supabase db push
 
 ### **Variables d'environnement Netlify**
 
+⚠️ **Important** : La détection de secrets est désactivée dans `netlify.toml` car les clés `VITE_*` sont publiques.
+
 Netlify récupérera automatiquement les variables du fichier `.env`, mais pour plus de sécurité, ajoutez-les manuellement :
 
 1. **Site Settings** > **Environment Variables**
@@ -118,10 +120,16 @@ Dans Netlify > Site Settings > Domain Management :
 ### **Erreurs de build**
 ```bash
 # Nettoyer et rebuilder
-rm -rf node_modules package-lock.json
+rm -rf node_modules package-lock.json dist
 npm install
 npm run build
 ```
+
+### **Erreur "Secrets scanning found secrets"**
+Si Netlify détecte des "secrets" dans le build :
+- Les clés `VITE_*` sont publiques (côté client)
+- La détection est désactivée dans `netlify.toml`
+- Le dossier `dist` est exclu du repository
 
 ### **Erreurs de connexion Supabase**
 - Vérifiez les variables d'environnement

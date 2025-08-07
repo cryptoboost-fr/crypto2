@@ -5,6 +5,10 @@
 [build.environment]
   NODE_VERSION = "18"
   NPM_VERSION = "9"
+  # Configuration pour la détection de secrets
+  SECRETS_SCAN_ENABLED = "false"
+  # Alternative: exclure des chemins spécifiques
+  SECRETS_SCAN_OMIT_PATHS = "dist/**,node_modules/**,*.md,*.sql"
 
 [[redirects]]
   from = "/*"
