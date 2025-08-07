@@ -21,18 +21,32 @@ export const useAuthStore = create<AuthStore>((set, get) => ({
     set({ loading: true, error: null });
 
     try {
+      console.log('🔐 Tentative de connexion pour:', credentials.email);
+      
       const { data, error } = await supabase.auth.signInWithPassword({
         email: credentials.email,
         password: credentials.password,
       });
 
       if (error) {
+        console.error('❌ Erreur d\'authentification Supabase:', error);
         set({ error: error.message, loading: false });
         return { error: error.message };
       }
 
+      console.log('✅ Authentification Supabase réussie:', data.user?.email);
+
       if (data.user?.email) {
+        console.log('🔍 Recherche du profil utilisateur...');
         const user = await userApi.getUserByEmail(data.user.email);
+        
+        if (!user) {
+          console.error('❌ Profil utilisateur non trouvé dans la base');
+          set({ error: 'Profil utilisateur non trouvé', loading: false });
+          return { error: 'Profil utilisateur non trouvé' };
+        }
+        
+        console.log('👤 Profil utilisateur trouvé:', user.role, user.full_name);
         set({ 
           user, 
           session: data.session, 
@@ -43,6 +57,7 @@ export const useAuthStore = create<AuthStore>((set, get) => ({
 
       return {};
     } catch (error) {
+      console.error('💥 Erreur inattendue lors de la connexion:', error);
       const errorMessage = error instanceof Error ? error.message : 'Une erreur est survenue';
       set({ error: errorMessage, loading: false });
       return { error: errorMessage };
