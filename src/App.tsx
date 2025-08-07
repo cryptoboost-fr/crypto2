@@ -173,6 +173,56 @@ function App() {
 
         {/* Client routes */}
         <Route
+          path="/client"
+          element={
+            <ProtectedRoute requiredRole="client">
+              <ClientLayout />
+            </ProtectedRoute>
+          }
+        >
+          <Route index element={<Navigate to="/client/dashboard" replace />} />
+          <Route
+            path="dashboard"
+            element={
+              <Suspense fallback={<PageSkeleton />}>
+                <Dashboard />
+              </Suspense>
+            }
+          />
+          <Route path="wallet" element={
+            <Suspense fallback={<PageSkeleton />}>
+              <Wallet />
+            </Suspense>
+          } />
+          <Route path="plans" element={
+            <Suspense fallback={<PageSkeleton />}>
+              <ClientPlans />
+            </Suspense>
+          } />
+          <Route path="exchange" element={
+            <Suspense fallback={<PageSkeleton />}>
+              <Exchange />
+            </Suspense>
+          } />
+          <Route path="history" element={
+            <Suspense fallback={<PageSkeleton />}>
+              <History />
+            </Suspense>
+          } />
+          <Route path="profile" element={
+            <Suspense fallback={<PageSkeleton />}>
+              <Profile />
+            </Suspense>
+          } />
+          <Route path="notifications" element={
+            <Suspense fallback={<PageSkeleton />}>
+              <Notifications />
+            </Suspense>
+          } />
+        </Route>
+
+        {/* Legacy client route for backward compatibility */}
+        <Route
           path="/dashboard"
           element={
             <ProtectedRoute requiredRole="client">
@@ -180,11 +230,7 @@ function App() {
             </ProtectedRoute>
           }
         >
-          <Route index element={
-            <Suspense fallback={<PageSkeleton />}>
-              <Dashboard />
-            </Suspense>
-          } />
+          <Route index element={<Navigate to="/client/dashboard" replace />} />
           <Route path="wallet" element={
             <Suspense fallback={<PageSkeleton />}>
               <Wallet />
