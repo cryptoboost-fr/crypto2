@@ -19,7 +19,7 @@ import { utils } from '@/lib/supabase';
 import { InvestmentPlan, UserInvestment } from '@/types';
 import { useToast } from '@/components/ui/toaster';
 
-export const ClientPlans = () => {
+export const Plans = () => {
   const { user } = useAuthStore();
   const { toast } = useToast();
   const [plans, setPlans] = useState<InvestmentPlan[]>([]);

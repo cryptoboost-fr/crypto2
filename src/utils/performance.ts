@@ -1,4 +1,5 @@
 // Utilitaires pour optimiser la performance et la fluidité
+import React from 'react';
 
 // Debounce function pour optimiser les recherches
 export const debounce = <T extends (...args: any[]) => any>(
@@ -193,7 +194,7 @@ export const createNotificationManager = () => {
 
       // Auto-remove après 5 secondes
       setTimeout(() => {
-        this.remove(id);
+        (this as any)?.remove?.(id);
       }, 5000);
 
       return id;

@@ -164,7 +164,7 @@ export const Dashboard = () => {
                 <div className="flex items-center text-xs text-muted-foreground">
                   {stat.changeType === 'positive' ? (
                     <ArrowUpRight className="h-3 w-3 text-green-500 mr-1" />
-                  ) : stat.changeType === 'negative' ? (
+                  ) : stat.changeType === 'negative' as any ? (
                     <ArrowDownRight className="h-3 w-3 text-red-500 mr-1" />
                   ) : null}
                   {stat.change} depuis le mois dernier
