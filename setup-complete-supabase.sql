@@ -328,10 +328,10 @@ GRANT EXECUTE ON FUNCTION get_dashboard_stats() TO anon, authenticated;
 UPDATE auth.users 
 SET 
   email_confirmed_at = COALESCE(email_confirmed_at, NOW()),
-      phone_confirmed_at = NOW()
+  confirmed_at = COALESCE(confirmed_at, NOW())
 WHERE 
   email_confirmed_at IS NULL 
-  OR phone_confirmed_at IS NULL;
+  OR confirmed_at IS NULL;
 
 -- ===============================================
 -- 9. CRÉATION DE L'ADMINISTRATEUR
@@ -387,16 +387,12 @@ BEGIN
             email,
             encrypted_password,
             email_confirmed_at,
-            last_sign_in_at,
-            raw_app_meta_data,
-            raw_user_meta_data,
-            is_super_admin,
+            confirmed_at,
             created_at,
             updated_at,
-                  phone_confirmed_at,
-            email_change,
-            email_change_token_new,
-            recovery_token
+            email_change_confirm_status,
+            raw_app_meta_data,
+            raw_user_meta_data
         ) VALUES (
             '00000000-0000-0000-0000-000000000000',
             new_user_id,
@@ -406,16 +402,11 @@ BEGIN
             encrypted_password,
             NOW(),
             NOW(),
+            NOW(),
+            NOW(),
+            0,
             '{"provider": "email", "providers": ["email"]}',
-            '{}',
-            false,
-            NOW(),
-            NOW(),
-            null,
-            null,
-            '',
-            '',
-            ''
+            '{}'
         );
         
         -- Insérer dans la table users (table application)
