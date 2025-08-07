@@ -117,12 +117,12 @@ export const PublicHeader = () => {
           <div className="hidden md:flex items-center space-x-4">
             {user ? (
               <div className="flex items-center space-x-4">
-                <Link to="/dashboard">
+                <Link to={user?.role === 'admin' ? '/admin/dashboard' : '/client/dashboard'}>
                   <Button variant="outline" size="sm">
                     Dashboard
                   </Button>
                 </Link>
-                <Link to="/profile">
+                <Link to="/client/profile">
                   <Button variant="gradient" size="sm">
                     Mon Compte
                   </Button>
@@ -197,12 +197,12 @@ export const PublicHeader = () => {
               <div className="pt-4 border-t border-border">
                 {user ? (
                   <div className="space-y-2">
-                    <Link to="/dashboard" onClick={() => setIsMenuOpen(false)}>
+                    <Link to={user?.role === 'admin' ? '/admin/dashboard' : '/client/dashboard'} onClick={() => setIsMenuOpen(false)}>
                       <Button variant="outline" className="w-full">
                         Dashboard
                       </Button>
                     </Link>
-                    <Link to="/profile" onClick={() => setIsMenuOpen(false)}>
+                    <Link to="/client/profile" onClick={() => setIsMenuOpen(false)}>
                       <Button variant="gradient" className="w-full">
                         Mon Compte
                       </Button>

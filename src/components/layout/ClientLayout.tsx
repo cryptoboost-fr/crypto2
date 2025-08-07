@@ -28,13 +28,13 @@ export const ClientLayout = () => {
   const { toast } = useToast();
 
   const navigation = [
-    { name: 'Dashboard', href: '/dashboard', icon: Home },
-    { name: 'Wallet', href: '/dashboard/wallet', icon: Wallet },
-    { name: 'Plans', href: '/dashboard/plans', icon: TrendingUp },
-    { name: 'Exchange', href: '/dashboard/exchange', icon: ArrowLeftRight },
-    { name: 'Historique', href: '/dashboard/history', icon: History },
-    { name: 'Profil', href: '/dashboard/profile', icon: User },
-    { name: 'Notifications', href: '/dashboard/notifications', icon: Bell },
+    { name: 'Dashboard', href: '/client/dashboard', icon: Home },
+    { name: 'Wallet', href: '/client/wallet', icon: Wallet },
+    { name: 'Plans', href: '/client/plans', icon: TrendingUp },
+    { name: 'Exchange', href: '/client/exchange', icon: ArrowLeftRight },
+    { name: 'Historique', href: '/client/history', icon: History },
+    { name: 'Profil', href: '/client/profile', icon: User },
+    { name: 'Notifications', href: '/client/notifications', icon: Bell },
   ];
 
   const handleSignOut = async () => {
@@ -68,7 +68,7 @@ export const ClientLayout = () => {
         <div className="flex flex-col h-full">
           {/* Header */}
           <div className="flex items-center justify-between p-6 border-b border-border">
-            <Link to="/dashboard" className="flex items-center space-x-2">
+            <Link to="/client/dashboard" className="flex items-center space-x-2">
               <div className="w-8 h-8 bg-gradient-to-r from-crypto-primary to-crypto-secondary rounded-lg flex items-center justify-center">
                 <Zap className="w-5 h-5 text-white" />
               </div>
