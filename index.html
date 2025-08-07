@@ -1,0 +1,297 @@
+<!doctype html>
+<html lang="fr" dir="ltr">
+  <head>
+    <meta charset="UTF-8" />
+    
+    <!-- Optimisations de base -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+    <meta name="theme-color" content="#3B82F6" />
+    <meta name="color-scheme" content="dark light" />
+    
+    <!-- Meta SEO améliorés -->
+    <title>CryptoBoost - Plateforme de Trading Automatisé</title>
+    <meta name="description" content="Plateforme de trading automatisé de cryptomonnaies avec gestion d'investissements, wallets crypto et échange en temps réel." />
+    <meta name="keywords" content="crypto, trading, bitcoin, ethereum, investissement, automatisé, blockchain, IA, arbitrage" />
+    <meta name="author" content="CryptoBoost" />
+    <meta name="robots" content="index, follow" />
+    <link rel="canonical" href="https://cryptoboost.app" />
+    
+    <!-- Open Graph améliorés -->
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="CryptoBoost - Trading Automatisé" />
+    <meta property="og:description" content="Plateforme de trading automatisé de cryptomonnaies avec IA" />
+    <meta property="og:url" content="https://cryptoboost.app/" />
+    <meta property="og:site_name" content="CryptoBoost" />
+    <meta property="og:image" content="/og-image.jpg" />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:locale" content="fr_FR" />
+
+    <!-- Twitter améliorés -->
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:site" content="@cryptoboost" />
+    <meta name="twitter:creator" content="@cryptoboost" />
+    <meta name="twitter:title" content="CryptoBoost - Trading Automatisé" />
+    <meta name="twitter:description" content="Plateforme de trading automatisé de cryptomonnaies avec IA" />
+    <meta name="twitter:image" content="/twitter-card.png" />
+    
+    <!-- PWA Manifest -->
+    <link rel="manifest" href="/manifest.json" />
+    
+    <!-- Favicons optimisés -->
+    <link rel="icon" type="image/x-icon" href="/favicon.ico" />
+    <link rel="icon" type="image/svg+xml" href="/vite.svg" />
+    <link rel="apple-touch-icon" sizes="180x180" href="/icons/apple-touch-icon.png" />
+    
+    <!-- iOS PWA -->
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+    <meta name="apple-mobile-web-app-title" content="CryptoBoost" />
+    <meta name="format-detection" content="telephone=no" />
+    
+    <!-- Android PWA -->
+    <meta name="mobile-web-app-capable" content="yes" />
+    <meta name="application-name" content="CryptoBoost" />
+    
+    <!-- Sécurité -->
+    <meta http-equiv="X-Content-Type-Options" content="nosniff" />
+    <meta http-equiv="X-Frame-Options" content="DENY" />
+    <meta http-equiv="X-XSS-Protection" content="1; mode=block" />
+    <meta name="referrer" content="strict-origin-when-cross-origin" />
+    
+    <!-- Preconnect optimisations -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    
+    <!-- Critical CSS inline -->
+    <style>
+      html, body {
+        margin: 0;
+        padding: 0;
+        font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+        background-color: #0f172a;
+        color: #f8fafc;
+        overflow-x: hidden;
+      }
+      
+      #root {
+        min-height: 100vh;
+        display: flex;
+        flex-direction: column;
+      }
+      
+      .loading-screen {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        z-index: 9999;
+        flex-direction: column;
+        gap: 20px;
+      }
+      
+      .loading-spinner {
+        width: 48px;
+        height: 48px;
+        border: 4px solid rgba(59, 130, 246, 0.2);
+        border-top: 4px solid #3B82F6;
+        border-radius: 50%;
+        animation: spin 1s linear infinite;
+      }
+      
+      .loading-dots {
+        display: flex;
+        gap: 4px;
+      }
+      
+      .loading-dot {
+        width: 8px;
+        height: 8px;
+        background: #3B82F6;
+        border-radius: 50%;
+        animation: bounce 1.4s ease-in-out infinite both;
+      }
+      
+      .loading-dot:nth-child(1) { animation-delay: -0.32s; }
+      .loading-dot:nth-child(2) { animation-delay: -0.16s; }
+      
+      @keyframes spin {
+        0% { transform: rotate(0deg); }
+        100% { transform: rotate(360deg); }
+      }
+      
+      @keyframes bounce {
+        0%, 80%, 100% { transform: scale(0); }
+        40% { transform: scale(1); }
+      }
+      
+      * {
+        box-sizing: border-box;
+      }
+      
+      img {
+        max-width: 100%;
+        height: auto;
+      }
+      
+      button, a {
+        -webkit-tap-highlight-color: transparent;
+        touch-action: manipulation;
+      }
+    </style>
+  </head>
+  <body>
+    <!-- Loading screen amélioré -->
+    <div id="loading-screen" class="loading-screen">
+      <div class="loading-spinner"></div>
+      <div style="color: #94a3b8; font-size: 14px; margin-top: 16px;">Chargement de CryptoBoost...</div>
+      <div class="loading-dots">
+        <div class="loading-dot"></div>
+        <div class="loading-dot"></div>
+        <div class="loading-dot"></div>
+      </div>
+    </div>
+    
+    <!-- App root -->
+    <div id="root"></div>
+    
+    <!-- Fallback pour JS désactivé -->
+    <noscript>
+      <div style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #0f172a; color: #f8fafc; display: flex; align-items: center; justify-content: center; text-align: center; padding: 20px; z-index: 10000;">
+        <div>
+          <h1 style="margin-bottom: 20px; color: #3B82F6;">JavaScript requis</h1>
+          <p>CryptoBoost nécessite JavaScript pour fonctionner correctement.</p>
+          <p>Veuillez activer JavaScript dans votre navigateur et recharger la page.</p>
+        </div>
+      </div>
+    </noscript>
+    
+    <!-- Scripts optimisés -->
+    <script>
+      // Cacher le loading screen avec animation
+      function hideLoadingScreen() {
+        const loadingScreen = document.getElementById('loading-screen');
+        if (loadingScreen) {
+          loadingScreen.style.opacity = '0';
+          loadingScreen.style.transition = 'opacity 0.5s ease-out';
+          setTimeout(() => {
+            loadingScreen.remove();
+          }, 500);
+        }
+      }
+      
+      window.addEventListener('load', hideLoadingScreen);
+      
+      // Timeout de sécurité au cas où l'événement load ne se déclenche pas
+      setTimeout(hideLoadingScreen, 10000);
+      
+      // Service Worker avec gestion d'erreurs
+      if ('serviceWorker' in navigator) {
+        window.addEventListener('load', () => {
+          navigator.serviceWorker.register('/sw.js')
+            .then((registration) => {
+              console.log('✅ Service Worker enregistré');
+              
+              // Gestion des mises à jour
+              registration.addEventListener('updatefound', () => {
+                const newWorker = registration.installing;
+                if (newWorker) {
+                  newWorker.addEventListener('statechange', () => {
+                    if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
+                      // Notification de mise à jour disponible
+                      const updateBanner = document.createElement('div');
+                      updateBanner.innerHTML = `
+                        <div style="position: fixed; top: 0; left: 0; right: 0; background: #3B82F6; color: white; padding: 12px; text-align: center; z-index: 10000;">
+                          Nouvelle version disponible ! 
+                          <button onclick="window.location.reload()" style="background: transparent; border: 1px solid white; color: white; padding: 4px 12px; margin-left: 12px; border-radius: 4px; cursor: pointer;">
+                            Mettre à jour
+                          </button>
+                        </div>
+                      `;
+                      document.body.appendChild(updateBanner);
+                    }
+                  });
+                }
+              });
+            })
+            .catch((error) => {
+              console.log('❌ Erreur Service Worker:', error);
+            });
+        });
+      }
+      
+      // PWA Install Prompt amélioré
+      let deferredPrompt;
+      window.addEventListener('beforeinstallprompt', (e) => {
+        e.preventDefault();
+        deferredPrompt = e;
+        
+        // Afficher le prompt d'installation après interaction utilisateur
+        setTimeout(() => {
+          if (deferredPrompt && !localStorage.getItem('pwa-dismissed')) {
+            showInstallPrompt();
+          }
+        }, 30000);
+      });
+      
+      function showInstallPrompt() {
+        const installBanner = document.createElement('div');
+        installBanner.innerHTML = `
+          <div style="position: fixed; bottom: 20px; left: 20px; right: 20px; max-width: 400px; margin: 0 auto; background: linear-gradient(135deg, #3B82F6, #8B5CF6); color: white; padding: 16px; border-radius: 12px; box-shadow: 0 8px 32px rgba(59, 130, 246, 0.3); z-index: 1000; display: flex; align-items: center; gap: 12px;">
+            <div style="flex: 1;">
+              <div style="font-weight: 600; margin-bottom: 4px;">Installer CryptoBoost</div>
+              <div style="font-size: 14px; opacity: 0.9;">Accès rapide depuis votre écran d'accueil</div>
+            </div>
+            <button id="install-btn" style="background: rgba(255,255,255,0.2); border: none; color: white; padding: 8px 16px; border-radius: 6px; cursor: pointer; font-weight: 500;">
+              Installer
+            </button>
+            <button id="dismiss-btn" style="background: transparent; border: none; color: white; padding: 8px; cursor: pointer; opacity: 0.7;">
+              ✕
+            </button>
+          </div>
+        `;
+        
+        document.body.appendChild(installBanner);
+        
+        document.getElementById('install-btn').addEventListener('click', () => {
+          deferredPrompt.prompt();
+          deferredPrompt.userChoice.then((choiceResult) => {
+            deferredPrompt = null;
+            installBanner.remove();
+          });
+        });
+        
+        document.getElementById('dismiss-btn').addEventListener('click', () => {
+          localStorage.setItem('pwa-dismissed', 'true');
+          installBanner.remove();
+        });
+      }
+      
+      // Performance monitoring
+      if ('performance' in window && 'PerformanceObserver' in window) {
+        // Core Web Vitals
+        new PerformanceObserver((entryList) => {
+          for (const entry of entryList.getEntries()) {
+            console.log(`📊 ${entry.name}:`, entry.value);
+          }
+        }).observe({entryTypes: ['measure', 'navigation', 'resource']});
+      }
+      
+      // Error tracking global
+      window.addEventListener('error', (e) => {
+        console.error('❌ Erreur globale:', e.error);
+      });
+      
+      window.addEventListener('unhandledrejection', (e) => {
+        console.error('❌ Promise rejetée:', e.reason);
+      });
+    </script>
+    
+    <script type="module" src="/src/main.tsx"></script>
+  </body>
+</html> 
