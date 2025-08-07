@@ -11,11 +11,9 @@ DECLARE
     admin_user_id uuid;
     admin_email text := 'admin@cryptoboost.world';
     admin_password text := 'admin123';
-    admin_id text;
 BEGIN
     -- Générer un UUID pour l'admin
     admin_user_id := gen_random_uuid();
-    admin_id := admin_user_id::text;
     
     -- Créer l'utilisateur dans auth.users avec les champs essentiels
     INSERT INTO auth.users (
@@ -65,7 +63,7 @@ BEGIN
         created_at,
         updated_at
     ) VALUES (
-        admin_id,
+        admin_user_id,
         admin_email,
         'Admin CryptoBoost',
         'admin',
@@ -78,7 +76,7 @@ BEGIN
     
     RAISE NOTICE '✅ Admin créé avec succès: %', admin_email;
     RAISE NOTICE '🔑 Mot de passe: %', admin_password;
-    RAISE NOTICE '🆔 ID: %', admin_id;
+    RAISE NOTICE '🆔 ID: %', admin_user_id;
     
 END $$;
 
