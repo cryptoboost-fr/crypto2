@@ -53,6 +53,12 @@ export const useAuthStore = create<AuthStore>((set, get) => ({
     set({ loading: true, error: null });
 
     try {
+      // Check password length
+      if (userData.password.length < 8) {
+        set({ error: 'Le mot de passe doit contenir au moins 8 caractères', loading: false });
+        return { error: 'Le mot de passe doit contenir au moins 8 caractères' };
+      }
+
       // Check if passwords match
       if (userData.password !== userData.confirm_password) {
         set({ error: 'Les mots de passe ne correspondent pas', loading: false });

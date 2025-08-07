@@ -126,10 +126,11 @@ export const Register = () => {
                   id="password"
                   name="password"
                   type={showPassword ? 'text' : 'password'}
-                  placeholder="Votre mot de passe"
+                  placeholder="Minimum 8 caractères"
                   value={formData.password}
                   onChange={handleInputChange}
                   required
+                  minLength={8}
                   className="pl-10 pr-10"
                 />
                 <button
@@ -140,6 +141,9 @@ export const Register = () => {
                   {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
                 </button>
               </div>
+              <p className="text-xs text-muted-foreground">
+                Le mot de passe doit contenir au moins 8 caractères
+              </p>
             </div>
 
             <div className="space-y-2">
@@ -153,6 +157,7 @@ export const Register = () => {
                   name="confirm_password"
                   type={showConfirmPassword ? 'text' : 'password'}
                   placeholder="Confirmez votre mot de passe"
+                  minLength={8}
                   value={formData.confirm_password}
                   onChange={handleInputChange}
                   required

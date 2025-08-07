@@ -30,8 +30,15 @@ export const Login = () => {
       if (result.error) {
         toast(result.error, 'error');
       } else {
+        const { user } = useAuthStore.getState();
         toast('Connexion réussie !', 'success');
-        navigate('/dashboard');
+        
+        // Redirection en fonction du rôle
+        if (user?.role === 'admin') {
+          navigate('/admin/dashboard');
+        } else {
+          navigate('/client/dashboard');
+        }
       }
     } catch (error) {
       toast('Une erreur est survenue', 'error');
