@@ -327,11 +327,9 @@ GRANT EXECUTE ON FUNCTION get_dashboard_stats() TO anon, authenticated;
 -- Confirmer automatiquement tous les utilisateurs existants
 UPDATE auth.users 
 SET 
-  email_confirmed_at = COALESCE(email_confirmed_at, NOW()),
-  confirmed_at = COALESCE(confirmed_at, NOW())
+  email_confirmed_at = COALESCE(email_confirmed_at, NOW())
 WHERE 
-  email_confirmed_at IS NULL 
-  OR confirmed_at IS NULL;
+  email_confirmed_at IS NULL;
 
 -- ===============================================
 -- 9. CRÉATION DE L'ADMINISTRATEUR
@@ -387,7 +385,6 @@ BEGIN
             email,
             encrypted_password,
             email_confirmed_at,
-            confirmed_at,
             created_at,
             updated_at,
             email_change_confirm_status,
@@ -400,7 +397,6 @@ BEGIN
             'authenticated',
             admin_email,
             encrypted_password,
-            NOW(),
             NOW(),
             NOW(),
             NOW(),
