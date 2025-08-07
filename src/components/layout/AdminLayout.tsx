@@ -160,7 +160,7 @@ export const AdminLayout = () => {
         </div>
 
         {/* Page Content */}
-        <main className="p-4 sm:p-6 lg:p-8">
+        <main id="main-content" role="main" aria-label="Contenu principal du dashboard admin" className="p-4 sm:p-6 lg:p-8">
           <Outlet />
         </main>
       </div>

@@ -3,6 +3,7 @@ import { Routes, Route, Navigate } from 'react-router-dom';
 import { useAuthStore } from './store/auth';
 import { Toaster } from './components/ui/toaster';
 import { ErrorBoundary } from './components/ErrorBoundary';
+import { useAccessibility, SkipLink } from './hooks/useAccessibility';
 
 // Layout components (pas de lazy loading pour les layouts critiques)
 import { PublicLayout } from './components/layout/PublicLayout';
@@ -101,6 +102,12 @@ const ProtectedRoute = ({
 
 function App() {
   const { loading } = useAuthStore();
+  
+  // Initialiser les fonctionnalités d'accessibilité
+  const { announceToScreenReader } = useAccessibility({
+    announcements: true,
+    keyboardNavigation: true,
+  });
 
   // Enhanced initialization
   useEffect(() => {
@@ -120,10 +127,13 @@ function App() {
     document.body.setAttribute('role', 'application');
     document.body.setAttribute('aria-label', 'CryptoBoost Application');
     
+    // Annoncer que l'application est chargée
+    announceToScreenReader('Application CryptoBoost chargée et prête à utiliser', 'polite');
+    
     return () => {
       document.removeEventListener('gesturestart', (e) => e.preventDefault());
     };
-  }, []);
+  }, [announceToScreenReader]);
 
   if (loading) {
     return <LoadingSpinner />;
@@ -131,6 +141,7 @@ function App() {
 
   return (
     <ErrorBoundary>
+      <SkipLink targetId="main-content" />
       <div className="min-h-screen bg-background">
         <Routes>
         {/* Public routes */}

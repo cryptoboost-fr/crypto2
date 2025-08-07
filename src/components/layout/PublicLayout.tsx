@@ -7,7 +7,7 @@ export const PublicLayout = () => {
   return (
     <div className="min-h-screen bg-background">
       <PublicHeader />
-      <main>
+      <main id="main-content" role="main" aria-label="Contenu principal">
         <Outlet />
       </main>
       <PublicFooter />

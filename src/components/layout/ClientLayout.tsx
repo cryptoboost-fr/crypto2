@@ -98,7 +98,7 @@ export const ClientLayout = () => {
           </div>
 
           {/* Navigation */}
-          <nav className="flex-1 p-4 space-y-2">
+          <nav className="flex-1 p-4 space-y-2" role="navigation" aria-label="Navigation principale du dashboard">
             {navigation.map((item) => {
               const isActive = location.pathname === item.href;
               return (
@@ -106,13 +106,14 @@ export const ClientLayout = () => {
                   key={item.name}
                   to={item.href}
                   onClick={() => setSidebarOpen(false)}
-                  className={`flex items-center space-x-3 px-3 py-2 rounded-lg transition-colors ${
+                  className={`flex items-center space-x-3 px-3 py-2 rounded-lg transition-colors focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 ${
                     isActive
                       ? 'bg-primary text-primary-foreground'
                       : 'text-muted-foreground hover:text-foreground hover:bg-accent'
                   }`}
+                  aria-current={isActive ? 'page' : undefined}
                 >
-                  <item.icon className="w-5 h-5" />
+                  <item.icon className="w-5 h-5" aria-hidden="true" />
                   <span className="font-medium">{item.name}</span>
                 </Link>
               );
@@ -163,7 +164,7 @@ export const ClientLayout = () => {
         </div>
 
         {/* Page Content */}
-        <main className="p-4 sm:p-6 lg:p-8">
+        <main id="main-content" role="main" aria-label="Contenu principal du dashboard client" className="p-4 sm:p-6 lg:p-8">
           <Outlet />
         </main>
       </div>
