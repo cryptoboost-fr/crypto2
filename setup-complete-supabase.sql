@@ -5,23 +5,23 @@
 -- 
 -- INSTRUCTIONS D'UTILISATION :
 -- 1. Copiez ce script entier
--- 2. Connectez-vous à votre projet Supabase
+-- 2. Connectez-vous à votre projet Supabase : https://ropzeweidvjkfeyyuiim.supabase.co
 -- 3. Allez dans SQL Editor
--- 4. MODIFIEZ LES VARIABLES CI-DESSOUS :
---    - admin_email : Votre email admin
---    - admin_password : Votre mot de passe (minimum 8 caractères)
---    - admin_name : Votre nom complet
+-- 4. MODIFIEZ LES VARIABLES CI-DESSOUS SI NÉCESSAIRE :
+--    - admin_email : Email admin (défaut : admin@cryptoboost.com)
+--    - admin_password : Mot de passe (défaut : CryptoAdmin2024!)
+--    - admin_name : Nom complet
 -- 5. Collez et exécutez le script
 -- 6. Votre base de données sera complètement configurée !
 -- ===============================================
 
--- ⚠️ VARIABLES À MODIFIER AVANT EXÉCUTION ⚠️
+-- ⚠️ VARIABLES À MODIFIER SI NÉCESSAIRE ⚠️
 DO $$
 DECLARE
-    -- 🔧 CONFIGUREZ CES VARIABLES :
-    admin_email TEXT := 'admin@cryptoboost.com';           -- ⚠️ CHANGEZ CETTE EMAIL
-    admin_password TEXT := 'AdminCrypto2024!';             -- ⚠️ CHANGEZ CE MOT DE PASSE
-    admin_name TEXT := 'Administrateur CryptoBoost';       -- ⚠️ CHANGEZ CE NOM
+    -- 🔧 CONFIGUREZ CES VARIABLES (valeurs par défaut configurées) :
+    admin_email TEXT := 'admin@cryptoboost.com';           -- Email admin par défaut
+    admin_password TEXT := 'CryptoAdmin2024!';             -- Mot de passe par défaut
+    admin_name TEXT := 'Administrateur CryptoBoost';       -- Nom par défaut
     
     -- Variables système (ne pas modifier)
     new_user_id UUID;
@@ -29,6 +29,7 @@ DECLARE
     encrypted_password TEXT;
 BEGIN
     RAISE NOTICE '🚀 Début de l''installation CryptoBoost...';
+    RAISE NOTICE '🌐 Projet Supabase: https://ropzeweidvjkfeyyuiim.supabase.co';
     
     -- Vérifier si l'utilisateur admin existe déjà
     SELECT COUNT(*) INTO user_exists 
