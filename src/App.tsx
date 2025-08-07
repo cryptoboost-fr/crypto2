@@ -89,11 +89,11 @@ const ProtectedRoute = ({
   }
 
   if (!user) {
-    return <Navigate to="/login" replace />;
+    return <Navigate to="/auth/login" replace />;
   }
 
   if (requiredRole === 'admin' && user.role !== 'admin') {
-    return <Navigate to="/dashboard" replace />;
+    return <Navigate to="/client/dashboard" replace />;
   }
 
   return <>{children}</>;
