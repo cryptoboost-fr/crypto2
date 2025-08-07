@@ -70,18 +70,24 @@ export const useAuthStore = create<AuthStore>((set, get) => ({
     set({ loading: true, error: null });
 
     try {
+      console.log('📝 Début d\'inscription pour:', userData.email);
+      
       // Check password length
       if (userData.password.length < 8) {
+        console.error('❌ Mot de passe trop court:', userData.password.length);
         set({ error: 'Le mot de passe doit contenir au moins 8 caractères', loading: false });
         return { error: 'Le mot de passe doit contenir au moins 8 caractères' };
       }
 
       // Check if passwords match
       if (userData.password !== userData.confirm_password) {
+        console.error('❌ Mots de passe ne correspondent pas');
         set({ error: 'Les mots de passe ne correspondent pas', loading: false });
         return { error: 'Les mots de passe ne correspondent pas' };
       }
 
+      console.log('✅ Validation client OK, envoi à Supabase...');
+      
       const { data, error } = await supabase.auth.signUp({
         email: userData.email,
         password: userData.password,
@@ -91,11 +97,16 @@ export const useAuthStore = create<AuthStore>((set, get) => ({
       });
 
       if (error) {
+        console.error('❌ Erreur Supabase signUp:', error);
         set({ error: error.message, loading: false });
         return { error: error.message };
       }
 
+      console.log('✅ Inscription Supabase réussie:', data.user?.email);
+
       if (data.user) {
+        console.log('👤 Création du profil utilisateur...');
+        
         // Create user profile
         const user = await userApi.createUser({
           id: data.user.id,
@@ -107,16 +118,24 @@ export const useAuthStore = create<AuthStore>((set, get) => ({
           total_profit: 0,
         });
 
-        set({ 
-          user, 
-          session: data.session, 
-          loading: false,
-          error: null 
-        });
+        if (user) {
+          console.log('✅ Profil client créé:', user.full_name);
+          set({ 
+            user, 
+            session: data.session, 
+            loading: false,
+            error: null 
+          });
+        } else {
+          console.error('❌ Échec création profil utilisateur');
+          set({ error: 'Erreur lors de la création du profil', loading: false });
+          return { error: 'Erreur lors de la création du profil' };
+        }
       }
 
       return {};
     } catch (error) {
+      console.error('💥 Erreur inattendue lors de l\'inscription:', error);
       const errorMessage = error instanceof Error ? error.message : 'Une erreur est survenue';
       set({ error: errorMessage, loading: false });
       return { error: errorMessage };
