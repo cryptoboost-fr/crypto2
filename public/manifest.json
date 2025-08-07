@@ -17,15 +17,15 @@
   },
   "icons": [
     {
-      "src": "/icons/icon-72x72.png",
-      "sizes": "72x72",
-      "type": "image/png",
+      "src": "/favicon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
       "purpose": "any"
     },
     {
-      "src": "/icons/icon-96x96.png",
-      "sizes": "96x96",
-      "type": "image/png",
+      "src": "/favicon.svg",
+      "sizes": "72x72",
+      "type": "image/svg+xml",
       "purpose": "any"
     },
     {
