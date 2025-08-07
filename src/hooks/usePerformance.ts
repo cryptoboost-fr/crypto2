@@ -1,6 +1,6 @@
 import { useEffect, useCallback, useRef } from 'react';
 
-interface PerformanceEntry {
+interface CustomPerformanceEntry {
   name: string;
   startTime: number;
   duration: number;
@@ -116,7 +116,7 @@ export const usePerformance = () => {
   const measureResourceTiming = useCallback(() => {
     if (!window.performance || !window.performance.getEntriesByType) return;
 
-    const resources = window.performance.getEntriesByType('resource') as PerformanceEntry[];
+    const resources = window.performance.getEntriesByType('resource') as PerformanceResourceTiming[];
     const slowResources = resources.filter(resource => resource.duration > 1000);
     
     if (slowResources.length > 0) {

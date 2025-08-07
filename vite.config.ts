@@ -17,7 +17,14 @@ export default defineConfig({
         ].filter(Boolean),
       },
     }),
-  ],
+    // Analyseur de bundle (généré seulement en production)
+    process.env.NODE_ENV === 'production' && visualizer({
+      filename: 'dist/bundle-analysis.html',
+      open: false,
+      gzipSize: true,
+      brotliSize: true,
+    }),
+  ].filter(Boolean),
   resolve: {
     alias: {
       "@": path.resolve(__dirname, "./src"),
