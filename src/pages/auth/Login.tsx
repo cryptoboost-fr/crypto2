@@ -25,22 +25,37 @@ export const Login = () => {
     setIsLoading(true);
 
     try {
+      console.log('🔐 Début de connexion pour:', formData.email);
       const result = await signIn(formData);
       
       if (result.error) {
+        console.error('❌ Erreur de connexion:', result.error);
         toast(result.error, 'error');
       } else {
-        const { user } = useAuthStore.getState();
-        toast('Connexion réussie !', 'success');
+        console.log('✅ Connexion réussie, récupération du profil...');
         
-        // Redirection en fonction du rôle
-        if (user?.role === 'admin') {
-          navigate('/admin/dashboard');
+        // Le user est maintenant retourné directement par signIn
+        const user = result.user || useAuthStore.getState().user;
+        console.log('👤 Profil récupéré:', user);
+        
+        if (user) {
+          toast('Connexion réussie !', 'success');
+          
+          // Redirection en fonction du rôle
+          if (user.role === 'admin') {
+            console.log('🔀 Redirection vers admin dashboard');
+            navigate('/admin/dashboard');
+          } else {
+            console.log('🔀 Redirection vers client dashboard');
+            navigate('/client/dashboard');
+          }
         } else {
-          navigate('/client/dashboard');
+          console.warn('⚠️ Profil utilisateur non trouvé après connexion');
+          toast('Erreur lors de la récupération du profil', 'error');
         }
       }
     } catch (error) {
+      console.error('💥 Erreur inattendue:', error);
       toast('Une erreur est survenue', 'error');
     } finally {
       setIsLoading(false);

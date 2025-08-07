@@ -4,7 +4,7 @@ import type { User, AuthState, LoginForm, RegisterForm } from '@/types';
 
 interface AuthStore extends AuthState {
   // Actions
-  signIn: (credentials: LoginForm) => Promise<{ error?: string }>;
+  signIn: (credentials: LoginForm) => Promise<{ error?: string; user?: User }>;
   signUp: (userData: RegisterForm) => Promise<{ error?: string }>;
   signOut: () => Promise<void>;
   refreshUser: () => Promise<void>;
@@ -53,6 +53,8 @@ export const useAuthStore = create<AuthStore>((set, get) => ({
           loading: false,
           error: null 
         });
+        
+        return { user };
       }
 
       return {};
