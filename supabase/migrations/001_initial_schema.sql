@@ -13,7 +13,7 @@ CREATE TABLE IF NOT EXISTS users (
   role VARCHAR DEFAULT 'client' CHECK (role IN ('client', 'admin')),
   status VARCHAR DEFAULT 'active' CHECK (status IN ('active', 'banned')),
   avatar_url VARCHAR,
-  phone VARCHAR,
+
   country VARCHAR,
   total_invested DECIMAL(15,2) DEFAULT 0, -- Amount in EUR
   total_profit DECIMAL(15,2) DEFAULT 0, -- Amount in EUR

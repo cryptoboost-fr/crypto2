@@ -19,7 +19,7 @@
 DO $$
 DECLARE
     -- 🔧 CONFIGUREZ CES VARIABLES (valeurs par défaut configurées) :
-    admin_email TEXT := 'admin@cryptoboost.com';           -- Email admin par défaut
+    admin_email TEXT := 'admin@cryptoboost.world';           -- Email admin par défaut
     admin_password TEXT := 'CryptoAdmin2024!';             -- Mot de passe par défaut
     admin_name TEXT := 'Administrateur CryptoBoost';       -- Nom par défaut
     
@@ -60,7 +60,7 @@ CREATE TABLE IF NOT EXISTS users (
   role VARCHAR DEFAULT 'client' CHECK (role IN ('client', 'admin')),
   status VARCHAR DEFAULT 'active' CHECK (status IN ('active', 'banned')),
   avatar_url VARCHAR,
-  phone VARCHAR,
+
   country VARCHAR,
   total_invested DECIMAL(15,2) DEFAULT 0, -- Amount in EUR
   total_profit DECIMAL(15,2) DEFAULT 0, -- Amount in EUR
@@ -328,7 +328,7 @@ GRANT EXECUTE ON FUNCTION get_dashboard_stats() TO anon, authenticated;
 UPDATE auth.users 
 SET 
   email_confirmed_at = COALESCE(email_confirmed_at, NOW()),
-  phone_confirmed_at = COALESCE(phone_confirmed_at, NOW())
+      phone_confirmed_at = NOW()
 WHERE 
   email_confirmed_at IS NULL 
   OR phone_confirmed_at IS NULL;
@@ -340,7 +340,7 @@ WHERE
 DO $$
 DECLARE
     -- ⚠️ VARIABLES À MODIFIER (répétées ici pour sécurité)
-    admin_email TEXT := 'admin@cryptoboost.com';           -- ⚠️ CHANGEZ CETTE EMAIL
+    admin_email TEXT := 'admin@cryptoboost.world';           -- ⚠️ CHANGEZ CETTE EMAIL
     admin_password TEXT := 'AdminCrypto2024!';             -- ⚠️ CHANGEZ CE MOT DE PASSE
     admin_name TEXT := 'Administrateur CryptoBoost';       -- ⚠️ CHANGEZ CE NOM
     
@@ -393,8 +393,7 @@ BEGIN
             is_super_admin,
             created_at,
             updated_at,
-            phone,
-            phone_confirmed_at,
+                  phone_confirmed_at,
             email_change,
             email_change_token_new,
             recovery_token

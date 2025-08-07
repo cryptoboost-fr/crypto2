@@ -322,8 +322,8 @@ Ce projet est sous licence MIT.
 ## 📞 Support
 
 Pour toute question ou problème :
-- Email : support@cryptoboost.com
-- Documentation : [docs.cryptoboost.com](https://docs.cryptoboost.com)
+- Email : support@cryptoboost.world
+- Documentation : [docs.cryptoboost.world](https://docs.cryptoboost.world)
 
 ---
 

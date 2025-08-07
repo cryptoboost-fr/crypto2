@@ -124,10 +124,10 @@ export class ErrorBoundary extends Component<Props, State> {
               <p className="text-xs text-muted-foreground">
                 Si le problème persiste, contactez notre support à{' '}
                 <a 
-                  href="mailto:support@cryptoboost.com" 
+                  href="mailto:support@cryptoboost.world" 
                   className="text-primary hover:underline"
                 >
-                  support@cryptoboost.com
+                                      support@cryptoboost.world
                 </a>
               </p>
             </CardContent>

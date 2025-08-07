@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom';
 import { 
   Zap, 
   Mail, 
-  Phone, 
+ 
   MapPin,
   Twitter,
   Facebook,
@@ -71,12 +71,9 @@ export const PublicFooter = () => {
             <div className="space-y-3">
               <div className="flex items-center space-x-3 text-sm text-muted-foreground">
                 <Mail className="w-4 h-4" />
-                <span>contact@cryptoboost.app</span>
+                <span>contact@cryptoboost.world</span>
               </div>
-              <div className="flex items-center space-x-3 text-sm text-muted-foreground">
-                <Phone className="w-4 h-4" />
-                <span>+33 1 23 45 67 89</span>
-              </div>
+
               <div className="flex items-center space-x-3 text-sm text-muted-foreground">
                 <MapPin className="w-4 h-4" />
                 <span>Paris, France</span>

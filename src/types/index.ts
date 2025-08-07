@@ -6,7 +6,6 @@ export interface User {
   role: 'client' | 'admin';
   status: 'active' | 'banned';
   avatar_url?: string;
-  phone?: string;
   country?: string;
   total_invested: number;
   total_profit: number;

@@ -25,8 +25,7 @@ export const Settings = () => {
     maxInvestmentAmount: 10000,
     minInvestmentAmount: 50,
     transactionFee: 0.1,
-    supportEmail: 'support@cryptoboost.com',
-    supportPhone: '+33 1 23 45 67 89'
+    supportEmail: 'support@cryptoboost.world'
   });
 
   const handleSave = () => {
@@ -191,13 +190,7 @@ export const Settings = () => {
                   onChange={(e) => setSettings(prev => ({ ...prev, supportEmail: e.target.value }))}
                 />
               </div>
-              <div>
-                <label className="text-sm font-medium">Téléphone support</label>
-                <Input
-                  value={settings.supportPhone}
-                  onChange={(e) => setSettings(prev => ({ ...prev, supportPhone: e.target.value }))}
-                />
-              </div>
+
             </div>
           </CardContent>
         </Card>

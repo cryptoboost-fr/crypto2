@@ -147,4 +147,4 @@ console.log('3. Lancer l\'application: npm run dev');
 console.log('4. Tester le workflow complet');
 
 console.log('\n📚 Documentation: README.md');
-console.log('🔧 Support: support@cryptoboost.com'); 
+console.log('🔧 Support: support@cryptoboost.world'); 

@@ -3,7 +3,7 @@ import { motion } from 'framer-motion';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Mail, Phone, MapPin, Send } from 'lucide-react';
+import { Mail, MapPin, Send } from 'lucide-react';
 
 export const Contact = () => {
   return (
@@ -78,16 +78,10 @@ export const Contact = () => {
                 <Mail className="w-5 h-5 text-crypto-primary" />
                 <div>
                   <p className="font-medium">Email</p>
-                  <p className="text-sm text-muted-foreground">support@cryptoboost.com</p>
+                  <p className="text-sm text-muted-foreground">support@cryptoboost.world</p>
                 </div>
               </div>
-              <div className="flex items-center space-x-3">
-                <Phone className="w-5 h-5 text-crypto-primary" />
-                <div>
-                  <p className="font-medium">Téléphone</p>
-                  <p className="text-sm text-muted-foreground">+33 1 23 45 67 89</p>
-                </div>
-              </div>
+
               <div className="flex items-center space-x-3">
                 <MapPin className="w-5 h-5 text-crypto-primary" />
                 <div>

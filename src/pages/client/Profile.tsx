@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { motion } from 'framer-motion';
-import { User, Mail, Phone, MapPin, Save, Edit } from 'lucide-react';
+import { User, Mail, MapPin, Save, Edit } from 'lucide-react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -13,7 +13,6 @@ export const Profile = () => {
   const [isEditing, setIsEditing] = useState(false);
   const [formData, setFormData] = useState({
     full_name: user?.full_name || '',
-    phone: user?.phone || '',
     country: user?.country || '',
   });
 
@@ -77,21 +76,7 @@ export const Profile = () => {
               </div>
             </div>
 
-            <div className="flex items-center space-x-3">
-              <Phone className="w-5 h-5 text-muted-foreground" />
-              <div className="flex-1">
-                <label className="text-sm font-medium">Téléphone</label>
-                {isEditing ? (
-                  <Input
-                    value={formData.phone}
-                    onChange={(e) => setFormData(prev => ({ ...prev, phone: e.target.value }))}
-                    placeholder="+33 6 12 34 56 78"
-                  />
-                ) : (
-                  <p className="text-sm text-muted-foreground">{user?.phone || 'Non renseigné'}</p>
-                )}
-              </div>
-            </div>
+
 
             <div className="flex items-center space-x-3">
               <MapPin className="w-5 h-5 text-muted-foreground" />

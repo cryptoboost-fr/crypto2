@@ -146,4 +146,4 @@ Votre application CryptoBoost est maintenant déployée et prête à être utili
 
 **URL de votre site :** `https://votre-site.netlify.app`
 
-**Support :** support@cryptoboost.com 
+**Support :** support@cryptoboost.world 

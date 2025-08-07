@@ -48,7 +48,7 @@ BEGIN
             email,
             encrypted_password,
             email_confirmed_at,
-            phone_confirmed_at,
+        
             confirmed_at,
             created_at,
             updated_at,

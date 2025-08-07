@@ -2,7 +2,7 @@
 
 ## 👨‍💼 **ADMINISTRATEUR**
 
-### **Email** : `admin@cryptoboost.com`
+### **Email** : `admin@cryptoboost.world`
 ### **Mot de passe** : `CryptoAdmin2024!`
 
 **Accès après connexion :**
@@ -73,7 +73,7 @@ SELECT email, role, status FROM users WHERE role = 'admin';
 ## 📱 **TEST COMPLET**
 
 ### **Étape 1 : Test Admin**
-1. Connexion avec `admin@cryptoboost.com` / `CryptoAdmin2024!`
+1. Connexion avec `admin@cryptoboost.world` / `CryptoAdmin2024!`
 2. Redirection vers `/admin/dashboard`
 3. Vérification des fonctionnalités admin
 

@@ -123,7 +123,7 @@ Le fichier `netlify.toml` contient la configuration optimisée :
 
 1. Dans `Site settings > Domain management`
 2. Cliquez sur "Add custom domain"
-3. Entrez votre domaine (ex: `cryptoboost.com`)
+3. Entrez votre domaine (ex: `cryptoboost.world`)
 4. Configurez les DNS selon les instructions
 
 ### SSL/HTTPS

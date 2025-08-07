@@ -94,7 +94,7 @@ VITE_APP_VERSION=1.0.0
 ### **2. Vérifier votre site en ligne :**
 ```
 1. Aller sur votre URL Netlify
-2. Tester la connexion admin: admin@cryptoboost.com / CryptoAdmin2024!
+2. Tester la connexion admin: admin@cryptoboost.world / CryptoAdmin2024!
 3. Vérifier redirection: /admin/dashboard
 4. Tester inscription client avec mot de passe 8+ caractères
 5. Vérifier navigation entre toutes les sections

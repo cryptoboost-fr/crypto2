@@ -19,7 +19,7 @@
 4. **Attendez** les messages de confirmation
 
 **Admin créé automatiquement :**
-- 📧 **Email**: `admin@cryptoboost.com`
+- 📧 **Email**: `admin@cryptoboost.world`
 - 🔑 **Mot de passe**: `CryptoAdmin2024!`
 
 **⚠️ IMPORTANT - Désactiver les confirmations d'email :**
