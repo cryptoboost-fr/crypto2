@@ -33,8 +33,8 @@ export const Register = () => {
       if (result.error) {
         toast(result.error, 'error');
       } else {
-        toast('Compte créé avec succès ! Vérifiez votre email.', 'success');
-        navigate('/auth/login');
+        toast('Compte créé avec succès ! Vous êtes maintenant connecté.', 'success');
+        navigate('/client/dashboard');
       }
     } catch (error) {
       toast('Une erreur est survenue', 'error');

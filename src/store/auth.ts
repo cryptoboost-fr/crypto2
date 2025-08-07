@@ -62,6 +62,9 @@ export const useAuthStore = create<AuthStore>((set, get) => ({
       const { data, error } = await supabase.auth.signUp({
         email: userData.email,
         password: userData.password,
+        options: {
+          emailRedirectTo: undefined, // Désactive la redirection email
+        }
       });
 
       if (error) {

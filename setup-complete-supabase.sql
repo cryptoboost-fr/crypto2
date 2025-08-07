@@ -321,7 +321,20 @@ GRANT ALL ON ALL SEQUENCES IN SCHEMA public TO anon, authenticated;
 GRANT EXECUTE ON FUNCTION get_dashboard_stats() TO anon, authenticated;
 
 -- ===============================================
--- 8. CRÉATION DE L'ADMINISTRATEUR
+-- 8. CONFIGURATION AUTHENTIFICATION (Désactiver confirmations email)
+-- ===============================================
+
+-- Confirmer automatiquement tous les utilisateurs existants
+UPDATE auth.users 
+SET 
+  email_confirmed_at = COALESCE(email_confirmed_at, NOW()),
+  phone_confirmed_at = COALESCE(phone_confirmed_at, NOW())
+WHERE 
+  email_confirmed_at IS NULL 
+  OR phone_confirmed_at IS NULL;
+
+-- ===============================================
+-- 9. CRÉATION DE L'ADMINISTRATEUR
 -- ===============================================
 
 DO $$

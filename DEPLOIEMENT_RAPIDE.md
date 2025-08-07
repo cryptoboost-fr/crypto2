@@ -22,6 +22,11 @@
 - 📧 **Email**: `admin@cryptoboost.com`
 - 🔑 **Mot de passe**: `CryptoAdmin2024!`
 
+**⚠️ IMPORTANT - Désactiver les confirmations d'email :**
+1. Après avoir exécuté le script SQL
+2. Allez dans **Authentication** > **Settings** dans votre dashboard Supabase
+3. **Désactivez** "Enable email confirmations" ✅ → OFF
+
 ### **Option B: Migration Standard**
 
 ```bash
