@@ -18,6 +18,14 @@ SUPABASE_URL = os.environ.get("SUPABASE_URL")  # e.g., https://xxxxx.supabase.co
 SUPABASE_ANON_KEY = os.environ.get("SUPABASE_ANON_KEY")
 
 REST_BASE = f"{SUPABASE_URL}/rest/v1" if SUPABASE_URL else None
+# Load .env if present (supervisor keeps .env mounted)
+load_dotenv()
+SUPABASE_URL = os.environ.get("SUPABASE_URL")  # e.g., https://xxxxx.supabase.co
+SUPABASE_ANON_KEY = os.environ.get("SUPABASE_ANON_KEY")
+
+REST_BASE = f"{SUPABASE_URL}/rest/v1" if SUPABASE_URL else None
+AUTH_BASE = f"{SUPABASE_URL}/auth/v1" if SUPABASE_URL else None
+
 AUTH_BASE = f"{SUPABASE_URL}/auth/v1" if SUPABASE_URL else None
 
 app = FastAPI(title="CryptoBoost Backend", openapi_url="/api/openapi.json", docs_url="/api/docs")
