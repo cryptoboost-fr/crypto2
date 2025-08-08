@@ -81,3 +81,11 @@ Thumbs.db
 # Temporary folders
 tmp/
 temp/
+
+# Project specific
+frontend/node_modules/
+frontend/build/
+backend/.env
+frontend/.env
+__pycache__/
+*.pyc
