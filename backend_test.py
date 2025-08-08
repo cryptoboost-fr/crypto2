@@ -405,22 +405,73 @@ class CryptoBoostAPITester:
         return success
 
 def main():
-    print("🚀 Starting CryptoBoost Backend API Tests")
-    print("=" * 50)
+    print("🚀 Starting CryptoBoost Backend API Tests - Supabase Integration")
+    print("=" * 70)
     
     # Initialize tester
     tester = CryptoBoostAPITester()
     
-    # Run all tests
-    tests = [
+    # Run basic health tests first
+    basic_tests = [
         ("Health Endpoint", tester.test_health_endpoint),
         ("Roles Endpoint", tester.test_roles_endpoint),
         ("Sync Time Endpoint", tester.test_sync_time_endpoint),
         ("Echo Action Endpoint", tester.test_echo_action_endpoint),
     ]
     
-    for test_name, test_func in tests:
-        print(f"\n{'='*20} {test_name} {'='*20}")
+    print(f"\n{'='*25} BASIC API TESTS {'='*25}")
+    for test_name, test_func in basic_tests:
+        print(f"\n{'-'*20} {test_name} {'-'*20}")
+        try:
+            test_func()
+        except Exception as e:
+            print(f"❌ Test failed with exception: {str(e)}")
+            tester.tests_run += 1
+    
+    # Run authentication tests
+    auth_tests = [
+        ("Register New User", tester.test_register_user),
+        ("Login Admin", tester.test_login_admin),
+        ("Login User", tester.test_login_user),
+        ("Get Admin Profile", tester.test_me_admin),
+        ("Get User Profile", tester.test_me_user),
+    ]
+    
+    print(f"\n{'='*25} AUTHENTICATION TESTS {'='*25}")
+    for test_name, test_func in auth_tests:
+        print(f"\n{'-'*20} {test_name} {'-'*20}")
+        try:
+            test_func()
+        except Exception as e:
+            print(f"❌ Test failed with exception: {str(e)}")
+            tester.tests_run += 1
+    
+    # Run admin tests
+    admin_tests = [
+        ("Admin Create Plan (Admin)", tester.test_admin_create_plan_as_admin),
+        ("Admin Create Plan (User - Should Fail)", tester.test_admin_create_plan_as_user),
+    ]
+    
+    print(f"\n{'='*25} ADMIN TESTS {'='*25}")
+    for test_name, test_func in admin_tests:
+        print(f"\n{'-'*20} {test_name} {'-'*20}")
+        try:
+            test_func()
+        except Exception as e:
+            print(f"❌ Test failed with exception: {str(e)}")
+            tester.tests_run += 1
+    
+    # Run user tests
+    user_tests = [
+        ("Create Investment", tester.test_user_create_investment),
+        ("Create Transaction", tester.test_user_create_transaction),
+        ("Get My Investments", tester.test_user_get_investments),
+        ("Get My Transactions", tester.test_user_get_transactions),
+    ]
+    
+    print(f"\n{'='*25} USER TESTS {'='*25}")
+    for test_name, test_func in user_tests:
+        print(f"\n{'-'*20} {test_name} {'-'*20}")
         try:
             test_func()
         except Exception as e:
@@ -428,9 +479,9 @@ def main():
             tester.tests_run += 1
     
     # Print final results
-    print(f"\n{'='*50}")
+    print(f"\n{'='*70}")
     print(f"📊 Test Results Summary")
-    print(f"{'='*50}")
+    print(f"{'='*70}")
     print(f"Tests Run: {tester.tests_run}")
     print(f"Tests Passed: {tester.tests_passed}")
     print(f"Tests Failed: {tester.tests_run - tester.tests_passed}")
