@@ -2,8 +2,5 @@
   command = "yarn build"
   publish = "frontend/build"
 
-[[redirects]]
-  from = "/api/*"
-  to = "https://example-backend.invalid/api/:splat"
-  status = 200
-  force = true
+# Note: API calls must use REACT_APP_BACKEND_URL environment variable.
+# Do not rely on Netlify redirects for API proxying per platform ingress rules.
