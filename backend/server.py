@@ -1,36 +1,30 @@
 import os
 import uuid
 from datetime import datetime, timezone
-from typing import Any, Dict, List, Optional
+from typing import Any, Dict, List, Optional, Tuple
 
-from fastapi import FastAPI, HTTPException, Body
+from fastapi import FastAPI, HTTPException, Body, Header
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel, Field, EmailStr
 from dotenv import load_dotenv
 
 # IMPORTANT:
 # - Bind handled by supervisor to 0.0.0.0:8001
-# - MongoDB URL must come from env var MONGO_URL (never hardcode)
 # - All routes MUST be prefixed with '/api'
+
+# Load env
+load_dotenv()
 
 MONGO_URL = os.environ.get("MONGO_URL")
 SUPABASE_URL = os.environ.get("SUPABASE_URL")  # e.g., https://xxxxx.supabase.co
 SUPABASE_ANON_KEY = os.environ.get("SUPABASE_ANON_KEY")
 
 REST_BASE = f"{SUPABASE_URL}/rest/v1" if SUPABASE_URL else None
-# Load .env if present (supervisor keeps .env mounted)
-load_dotenv()
-SUPABASE_URL = os.environ.get("SUPABASE_URL")  # e.g., https://xxxxx.supabase.co
-SUPABASE_ANON_KEY = os.environ.get("SUPABASE_ANON_KEY")
-
-REST_BASE = f"{SUPABASE_URL}/rest/v1" if SUPABASE_URL else None
-AUTH_BASE = f"{SUPABASE_URL}/auth/v1" if SUPABASE_URL else None
-
 AUTH_BASE = f"{SUPABASE_URL}/auth/v1" if SUPABASE_URL else None
 
 app = FastAPI(title="CryptoBoost Backend", openapi_url="/api/openapi.json", docs_url="/api/docs")
 
-# CORS: allow frontend origin via env if provided, fallback to permissive for dev
+# CORS
 frontend_origin = os.environ.get("FRONTEND_ORIGIN")
 allow_origins = [frontend_origin] if frontend_origin else ["*"]
 app.add_middleware(
@@ -41,11 +35,10 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-# Mongo setup (lazy connect) - we keep it to respect platform contract
+# Optional Mongo (kept for platform contract, not used in Supabase flow)
 mongo_client = None
 roles_collection = None
 users_collection = None
-
 if MONGO_URL:
     try:
         from motor.motor_asyncio import AsyncIOMotorClient
@@ -84,30 +77,89 @@ class LoginRequest(BaseModel):
     password: str
 
 
-@app.on_event("startup")
-async def ensure_seed_data():
-    # Seed default roles and admin user in Mongo (optional; Supabase owns real data)
-    if roles_collection is None or users_collection is None:
+# -------- Supabase helpers --------
+import httpx
+
+_role_cache: Dict[str, str] = {}  # name->id
+_role_rev_cache: Dict[str, str] = {}  # id->name
+
+
+def sb_headers(bearer: Optional[str] = None, json: bool = True) -> Dict[str, str]:
+    h = {
+        "apikey": SUPABASE_ANON_KEY,
+        "Authorization": f"Bearer {SUPABASE_ANON_KEY}",
+    }
+    if json:
+        h["Content-Type"] = "application/json"
+    if bearer:
+        h["Authorization"] = f"Bearer {bearer}"
+    return h
+
+
+async def load_roles_cache() -> None:
+    global _role_cache, _role_rev_cache
+    if not (REST_BASE and SUPABASE_ANON_KEY):
         return
-    try:
-        existing_roles = await roles_collection.count_documents({})
-        if existing_roles == 0:
-            await roles_collection.insert_many([
-                {"id": uuid4_str(), "name": "client"},
-                {"id": uuid4_str(), "name": "admin"},
-            ])
-        admin_exists = await users_collection.count_documents({"role": "admin"})
-        if admin_exists == 0:
-            await users_collection.insert_one({
-                "id": uuid4_str(),
-                "email": "admin@cryptoboost.local",
-                "role": "admin",
-                "created_at": datetime.now(timezone.utc).isoformat(),
-            })
-    except Exception:
-        pass
+    if _role_cache and _role_rev_cache:
+        return
+    async with httpx.AsyncClient(timeout=15.0) as client:
+        r = await client.get(f"{REST_BASE}/roles?select=*", headers=sb_headers())
+        r.raise_for_status()
+        for row in r.json():
+            _role_cache[row["name"]] = row["id"]
+            _role_rev_cache[row["id"]] = row["name"]
 
 
+async def get_auth_user(access_token: str) -> Dict[str, Any]:
+    if not (AUTH_BASE and SUPABASE_ANON_KEY):
+        raise HTTPException(status_code=500, detail="Supabase not configured")
+    async with httpx.AsyncClient(timeout=15.0) as client:
+        r = await client.get(f"{AUTH_BASE}/user", headers=sb_headers(bearer=access_token, json=False))
+        if r.status_code == 401:
+            raise HTTPException(status_code=401, detail="Invalid or expired token")
+        r.raise_for_status()
+        return r.json()
+
+
+async def get_user_profile_with_role(access_token: str) -> Tuple[Dict[str, Any], str]:
+    await load_roles_cache()
+    auth_user = await get_auth_user(access_token)
+    user_id = auth_user.get("id") or auth_user.get("user", {}).get("id")
+    email = auth_user.get("email") or auth_user.get("user", {}).get("email")
+    if not user_id:
+        raise HTTPException(status_code=401, detail="Invalid token payload")
+
+    async with httpx.AsyncClient(timeout=15.0) as client:
+        r = await client.get(
+            f"{REST_BASE}/users?select=id,email,role_id&id=eq.{user_id}",
+            headers=sb_headers(),
+        )
+        r.raise_for_status()
+        rows = r.json()
+        if not rows:
+            # auto-upsert as client if missing
+            client_role = _role_cache.get("client")
+            ins = await client.post(
+                f"{REST_BASE}/users",
+                headers=sb_headers(),
+                json=[{"id": user_id, "email": email, "role_id": client_role}],
+            )
+            ins.raise_for_status()
+            role_name = "client"
+            profile = {"id": user_id, "email": email, "role_id": client_role}
+        else:
+            profile = rows[0]
+            role_name = _role_rev_cache.get(profile["role_id"], "client")
+    return profile, role_name
+
+
+def require_bearer(token: Optional[str]) -> str:
+    if not token:
+        raise HTTPException(status_code=401, detail="Missing Authorization token")
+    return token
+
+
+# -------- Routes --------
 @app.get("/api/health")
 async def health():
     mongo_status = False
@@ -137,20 +189,13 @@ async def health():
 
 @app.get("/api/roles", response_model=List[Role])
 async def get_roles():
-    # Prefer Supabase if configured
     if REST_BASE and SUPABASE_ANON_KEY:
-        import httpx
         async with httpx.AsyncClient(timeout=15.0) as client:
-            r = await client.get(
-                f"{REST_BASE}/roles?select=*",
-                headers={"apikey": SUPABASE_ANON_KEY, "Authorization": f"Bearer {SUPABASE_ANON_KEY}"},
-            )
+            r = await client.get(f"{REST_BASE}/roles?select=*", headers=sb_headers())
             r.raise_for_status()
             items = r.json()
-            roles = [Role(id=str(x["id"]), name=x["name"]) for x in items]
-            return roles if roles else [Role(name="client"), Role(name="admin")]
+            return [Role(id=str(x["id"]), name=x["name"]) for x in items] or [Role(name="client"), Role(name="admin")]
 
-    # Fallback Mongo or static
     if roles_collection is None:
         return [Role(name="client"), Role(name="admin")]
 
@@ -184,16 +229,10 @@ async def supabase_register(payload: RegisterRequest):
     if not (AUTH_BASE and SUPABASE_ANON_KEY and REST_BASE):
         raise HTTPException(status_code=500, detail="Supabase not configured on backend")
 
-    import httpx
     async with httpx.AsyncClient(timeout=20.0) as client:
-        # 1) Sign up
         r = await client.post(
             f"{AUTH_BASE}/signup",
-            headers={
-                "apikey": SUPABASE_ANON_KEY,
-                "Authorization": f"Bearer {SUPABASE_ANON_KEY}",
-                "Content-Type": "application/json",
-            },
+            headers=sb_headers(),
             json={
                 "email": payload.email,
                 "password": payload.password,
@@ -203,35 +242,19 @@ async def supabase_register(payload: RegisterRequest):
         if r.status_code >= 300:
             raise HTTPException(status_code=r.status_code, detail=r.text)
         data = r.json()
-        user = (data or {}).get("user") or data  # defensive for shape changes
+        user = (data or {}).get("user") or data
         user_id = user.get("id") if user else None
         if not user_id:
             raise HTTPException(status_code=500, detail="Signup did not return user id")
 
-        # 2) Insert application user as client
-        # Get client role id
-        rr = await client.get(
-            f"{REST_BASE}/roles?select=id&name=eq.client",
-            headers={"apikey": SUPABASE_ANON_KEY, "Authorization": f"Bearer {SUPABASE_ANON_KEY}"},
-        )
-        rr.raise_for_status()
-        rows = rr.json()
-        if not rows:
-            raise HTTPException(status_code=500, detail="client role missing in roles table")
-        role_id = rows[0]["id"]
-
+        await load_roles_cache()
+        client_role = _role_cache.get("client")
         ins = await client.post(
             f"{REST_BASE}/users",
-            headers={
-                "apikey": SUPABASE_ANON_KEY,
-                "Authorization": f"Bearer {SUPABASE_ANON_KEY}",
-                "Content-Type": "application/json",
-                "Prefer": "return=representation",
-            },
-            json=[{"id": user_id, "email": payload.email, "role_id": role_id}],
+            headers=sb_headers(),
+            json=[{"id": user_id, "email": payload.email, "role_id": client_role}],
         )
         if ins.status_code >= 300:
-            # If conflict on email, try update id/role
             raise HTTPException(status_code=ins.status_code, detail=ins.text)
 
         return {"user_id": user_id, "email": payload.email, "status": "registered"}
@@ -242,15 +265,10 @@ async def supabase_login(payload: LoginRequest):
     if not (AUTH_BASE and SUPABASE_ANON_KEY):
         raise HTTPException(status_code=500, detail="Supabase not configured on backend")
 
-    import httpx
     async with httpx.AsyncClient(timeout=20.0) as client:
         r = await client.post(
             f"{AUTH_BASE}/token?grant_type=password",
-            headers={
-                "apikey": SUPABASE_ANON_KEY,
-                "Authorization": f"Bearer {SUPABASE_ANON_KEY}",
-                "Content-Type": "application/json",
-            },
+            headers=sb_headers(),
             json={"email": payload.email, "password": payload.password},
         )
         if r.status_code >= 300:
@@ -258,36 +276,35 @@ async def supabase_login(payload: LoginRequest):
         return r.json()
 
 
-# ============ Supabase domain endpoints (simple) ============
+@app.get("/api/me")
+async def me(authorization: Optional[str] = Header(None)):
+    token = require_bearer(authorization.replace("Bearer ", "") if authorization else None)
+    profile, role_name = await get_user_profile_with_role(token)
+    return {"id": profile["id"], "email": profile["email"], "role": role_name}
+
+
+# ============ Supabase domain endpoints ============
 @app.get("/api/plans")
 async def list_plans():
     if not (REST_BASE and SUPABASE_ANON_KEY):
         return []
-    import httpx
     async with httpx.AsyncClient(timeout=15.0) as client:
-        r = await client.get(
-            f"{REST_BASE}/investment_plans?select=*",
-            headers={"apikey": SUPABASE_ANON_KEY, "Authorization": f"Bearer {SUPABASE_ANON_KEY}"},
-        )
+        r = await client.get(f"{REST_BASE}/investment_plans?select=*", headers=sb_headers())
         r.raise_for_status()
         return r.json()
 
 
 @app.post("/api/admin/plans")
-async def create_plan(plan: Dict[str, Any] = Body(...)):
-    # NOTE: No auth enforcement here; for demo purposes only.
-    if not (REST_BASE and SUPABASE_ANON_KEY):
-        raise HTTPException(status_code=500, detail="Supabase not configured on backend")
-    import httpx
+async def create_plan(plan: Dict[str, Any] = Body(...), authorization: Optional[str] = Header(None)):
+    token = require_bearer(authorization.replace("Bearer ", "") if authorization else None)
+    _, role_name = await get_user_profile_with_role(token)
+    if role_name != "admin":
+        raise HTTPException(status_code=403, detail="Admin only")
+
     async with httpx.AsyncClient(timeout=15.0) as client:
         r = await client.post(
             f"{REST_BASE}/investment_plans",
-            headers={
-                "apikey": SUPABASE_ANON_KEY,
-                "Authorization": f"Bearer {SUPABASE_ANON_KEY}",
-                "Content-Type": "application/json",
-                "Prefer": "return=representation",
-            },
+            headers=sb_headers(json=True),
             json=[plan],
         )
         if r.status_code >= 300:
@@ -296,19 +313,16 @@ async def create_plan(plan: Dict[str, Any] = Body(...)):
 
 
 @app.post("/api/user/investments")
-async def create_investment(data: Dict[str, Any] = Body(...)):
-    if not (REST_BASE and SUPABASE_ANON_KEY):
-        raise HTTPException(status_code=500, detail="Supabase not configured on backend")
-    import httpx
+async def create_investment(data: Dict[str, Any] = Body(...), authorization: Optional[str] = Header(None)):
+    token = require_bearer(authorization.replace("Bearer ", "") if authorization else None)
+    profile, _ = await get_user_profile_with_role(token)
+    data = dict(data)
+    data["user_id"] = profile["id"]  # ensure ownership
+
     async with httpx.AsyncClient(timeout=15.0) as client:
         r = await client.post(
             f"{REST_BASE}/user_investments",
-            headers={
-                "apikey": SUPABASE_ANON_KEY,
-                "Authorization": f"Bearer {SUPABASE_ANON_KEY}",
-                "Content-Type": "application/json",
-                "Prefer": "return=representation",
-            },
+            headers=sb_headers(json=True),
             json=[data],
         )
         if r.status_code >= 300:
@@ -316,22 +330,45 @@ async def create_investment(data: Dict[str, Any] = Body(...)):
         return r.json()
 
 
+@app.get("/api/user/my-investments")
+async def my_investments(authorization: Optional[str] = Header(None)):
+    token = require_bearer(authorization.replace("Bearer ", "") if authorization else None)
+    profile, _ = await get_user_profile_with_role(token)
+    async with httpx.AsyncClient(timeout=15.0) as client:
+        r = await client.get(
+            f"{REST_BASE}/user_investments?select=*,plan:investment_plans(name)&user_id=eq.{profile['id']}",
+            headers=sb_headers(),
+        )
+        r.raise_for_status()
+        return r.json()
+
+
 @app.post("/api/user/transactions")
-async def create_transaction(data: Dict[str, Any] = Body(...)):
-    if not (REST_BASE and SUPABASE_ANON_KEY):
-        raise HTTPException(status_code=500, detail="Supabase not configured on backend")
-    import httpx
+async def create_transaction(data: Dict[str, Any] = Body(...), authorization: Optional[str] = Header(None)):
+    token = require_bearer(authorization.replace("Bearer ", "") if authorization else None)
+    profile, _ = await get_user_profile_with_role(token)
+    data = dict(data)
+    data["user_id"] = profile["id"]
+
     async with httpx.AsyncClient(timeout=15.0) as client:
         r = await client.post(
             f"{REST_BASE}/transactions",
-            headers={
-                "apikey": SUPABASE_ANON_KEY,
-                "Authorization": f"Bearer {SUPABASE_ANON_KEY}",
-                "Content-Type": "application/json",
-                "Prefer": "return=representation",
-            },
+            headers=sb_headers(json=True),
             json=[data],
         )
         if r.status_code >= 300:
             raise HTTPException(status_code=r.status_code, detail=r.text)
+        return r.json()
+
+
+@app.get("/api/user/my-transactions")
+async def my_transactions(authorization: Optional[str] = Header(None)):
+    token = require_bearer(authorization.replace("Bearer ", "") if authorization else None)
+    profile, _ = await get_user_profile_with_role(token)
+    async with httpx.AsyncClient(timeout=15.0) as client:
+        r = await client.get(
+            f"{REST_BASE}/transactions?select=id,type,amount,status,created_at&user_id=eq.{profile['id']}",
+            headers=sb_headers(),
+        )
+        r.raise_for_status()
         return r.json()

@@ -1,17 +1,23 @@
 import axios from 'axios';
 
-const BASE_URL = process.env.REACT_APP_BACKEND_URL; // Must include '/api' prefix per ingress rules
-
-if (!BASE_URL) {
-  // We don't throw, UI will show a friendly error; exporting stubs avoids crashes
-  console.warn('REACT_APP_BACKEND_URL is not defined; API calls will fail gracefully.');
-}
-
-const client = axios.create({ baseURL: BASE_URL });
+const BASE_URL = process.env.REACT_APP_BACKEND_URL; // must include '/api'
 
 export const api = {
-  getHealth: () => client.get('/health').then(r => r.data),
-  getRoles: () => client.get('/roles').then(r => r.data),
-  postEcho: (payload) => client.post('/actions/echo', payload).then(r => r.data),
-  getSyncTime: () => client.get('/sync/time').then(r => r.data),
+  // auth
+  register: (email, password, full_name) => axios.post(`${BASE_URL}/auth/register`, { email, password, full_name }).then(r => r.data),
+  login: (email, password) => axios.post(`${BASE_URL}/auth/login`, { email, password }).then(r => r.data),
+  me: (token) => axios.get(`${BASE_URL}/me`, { headers: { Authorization: `Bearer ${token}` } }).then(r => r.data),
+
+  // public
+  roles: () => axios.get(`${BASE_URL}/roles`).then(r => r.data),
+  plans: () => axios.get(`${BASE_URL}/plans`).then(r => r.data),
+
+  // admin
+  createPlan: (token, plan) => axios.post(`${BASE_URL}/admin/plans`, plan, { headers: { Authorization: `Bearer ${token}` } }).then(r => r.data),
+
+  // user
+  createInvestment: (token, data) => axios.post(`${BASE_URL}/user/investments`, data, { headers: { Authorization: `Bearer ${token}` } }).then(r => r.data),
+  myInvestments: (token) => axios.get(`${BASE_URL}/user/my-investments`, { headers: { Authorization: `Bearer ${token}` } }).then(r => r.data),
+  createTransaction: (token, data) => axios.post(`${BASE_URL}/user/transactions`, data, { headers: { Authorization: `Bearer ${token}` } }).then(r => r.data),
+  myTransactions: (token) => axios.get(`${BASE_URL}/user/my-transactions`, { headers: { Authorization: `Bearer ${token}` } }).then(r => r.data),
 };
