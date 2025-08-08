@@ -147,7 +147,7 @@ class CryptoBoostAPITester:
     def test_register_user(self):
         """Test POST /api/auth/register for new user"""
         user_data = {
-            "email": "user.ui@test.local",
+            "email": "user.ui@example.com",
             "password": "ChangeMe!123",
             "full_name": "Test User UI"
         }
