@@ -62,7 +62,7 @@ export default function App() {
 
       <section id="health" style={{ marginTop: 24 }}>
         <h2>Health backend</h2>
-        <button onClick={onRefreshHealth}>Rafraîchir Health</nutton>
+        <button onClick={onRefreshHealth}>Rafraîchir Health</button>
         <pre>{JSON.stringify(health, null, 2)}</pre>
       </section>
 
