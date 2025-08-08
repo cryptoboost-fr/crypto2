@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """
-Backend API Testing for CryptoBoost
-Tests the required endpoints: /api/health, /api/roles, /api/sync/time, POST /api/actions/echo
+Backend API Testing for CryptoBoost - Supabase Integration
+Tests all required endpoints including auth, admin, and user endpoints
 """
 
 import requests
@@ -10,10 +10,12 @@ import json
 from datetime import datetime
 
 class CryptoBoostAPITester:
-    def __init__(self, base_url="http://localhost:8001"):
+    def __init__(self, base_url="https://demobackend.emergentagent.com"):
         self.base_url = base_url
         self.tests_run = 0
         self.tests_passed = 0
+        self.admin_token = None
+        self.user_token = None
 
     def run_test(self, name, method, endpoint, expected_status, data=None):
         """Run a single API test"""
