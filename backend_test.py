@@ -17,10 +17,13 @@ class CryptoBoostAPITester:
         self.admin_token = None
         self.user_token = None
 
-    def run_test(self, name, method, endpoint, expected_status, data=None):
+    def run_test(self, name, method, endpoint, expected_status, data=None, token=None):
         """Run a single API test"""
         url = f"{self.base_url}{endpoint}"
         headers = {'Content-Type': 'application/json'}
+        
+        if token:
+            headers['Authorization'] = f'Bearer {token}'
 
         self.tests_run += 1
         print(f"\n🔍 Testing {name}...")
@@ -28,9 +31,9 @@ class CryptoBoostAPITester:
         
         try:
             if method == 'GET':
-                response = requests.get(url, headers=headers, timeout=10)
+                response = requests.get(url, headers=headers, timeout=15)
             elif method == 'POST':
-                response = requests.post(url, json=data, headers=headers, timeout=10)
+                response = requests.post(url, json=data, headers=headers, timeout=15)
             else:
                 print(f"❌ Unsupported method: {method}")
                 return False, {}
