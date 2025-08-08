@@ -249,9 +249,9 @@ async def supabase_login(payload: LoginRequest):
             headers={
                 "apikey": SUPABASE_ANON_KEY,
                 "Authorization": f"Bearer {SUPABASE_ANON_KEY}",
-                "Content-Type": "application/x-www-form-urlencoded",
+                "Content-Type": "application/json",
             },
-            data={"email": payload.email, "password": payload.password},
+            json={"email": payload.email, "password": payload.password},
         )
         if r.status_code >= 300:
             raise HTTPException(status_code=r.status_code, detail=r.text)
