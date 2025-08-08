@@ -143,6 +143,267 @@ class CryptoBoostAPITester:
                         print(f"   Received payload matches: {response[field] == test_payload}")
         return success
 
+    # ============ Supabase Auth Tests ============
+    def test_register_user(self):
+        """Test POST /api/auth/register for new user"""
+        user_data = {
+            "email": "user.ui@test.local",
+            "password": "ChangeMe!123",
+            "full_name": "Test User UI"
+        }
+        
+        success, response = self.run_test(
+            "Register New User",
+            "POST",
+            "/api/auth/register",
+            200,
+            data=user_data
+        )
+        
+        if success:
+            if "user_id" in response and "email" in response:
+                print(f"   User registered successfully: {response['email']}")
+                print(f"   User ID: {response['user_id']}")
+            else:
+                print("⚠️  Warning: Registration response missing expected fields")
+        return success
+
+    def test_login_admin(self):
+        """Test POST /api/auth/login for admin user"""
+        admin_data = {
+            "email": "admin@cryptoboost.world",
+            "password": "ChangeMe!123"
+        }
+        
+        success, response = self.run_test(
+            "Login Admin User",
+            "POST",
+            "/api/auth/login",
+            200,
+            data=admin_data
+        )
+        
+        if success:
+            if "access_token" in response:
+                self.admin_token = response["access_token"]
+                print(f"   Admin login successful, token obtained")
+            else:
+                print("⚠️  Warning: Login response missing access_token")
+        return success
+
+    def test_login_user(self):
+        """Test POST /api/auth/login for regular user"""
+        user_data = {
+            "email": "user.ui@test.local",
+            "password": "ChangeMe!123"
+        }
+        
+        success, response = self.run_test(
+            "Login Regular User",
+            "POST",
+            "/api/auth/login",
+            200,
+            data=user_data
+        )
+        
+        if success:
+            if "access_token" in response:
+                self.user_token = response["access_token"]
+                print(f"   User login successful, token obtained")
+            else:
+                print("⚠️  Warning: Login response missing access_token")
+        return success
+
+    def test_me_admin(self):
+        """Test GET /api/me with admin token"""
+        if not self.admin_token:
+            print("❌ Skipping - No admin token available")
+            return False
+            
+        success, response = self.run_test(
+            "Get Admin Profile",
+            "GET",
+            "/api/me",
+            200,
+            token=self.admin_token
+        )
+        
+        if success:
+            if "role" in response and response["role"] == "admin":
+                print(f"   Admin profile verified: {response.get('email', 'N/A')}")
+            else:
+                print(f"⚠️  Warning: Expected admin role, got: {response.get('role', 'N/A')}")
+        return success
+
+    def test_me_user(self):
+        """Test GET /api/me with user token"""
+        if not self.user_token:
+            print("❌ Skipping - No user token available")
+            return False
+            
+        success, response = self.run_test(
+            "Get User Profile",
+            "GET",
+            "/api/me",
+            200,
+            token=self.user_token
+        )
+        
+        if success:
+            if "role" in response:
+                print(f"   User profile verified: {response.get('email', 'N/A')} (role: {response['role']})")
+            else:
+                print("⚠️  Warning: Profile response missing role")
+        return success
+
+    # ============ Admin Tests ============
+    def test_admin_create_plan_as_admin(self):
+        """Test POST /api/admin/plans with admin token (should succeed)"""
+        if not self.admin_token:
+            print("❌ Skipping - No admin token available")
+            return False
+            
+        plan_data = {
+            "name": "Test Premium Plan",
+            "min_amount": 1000,
+            "profit_percent": 15.5,
+            "duration_days": 30,
+            "description": "Test plan created by admin"
+        }
+        
+        success, response = self.run_test(
+            "Admin Create Plan (Should Succeed)",
+            "POST",
+            "/api/admin/plans",
+            200,
+            data=plan_data,
+            token=self.admin_token
+        )
+        
+        if success:
+            print("   Plan created successfully by admin")
+        return success
+
+    def test_admin_create_plan_as_user(self):
+        """Test POST /api/admin/plans with user token (should fail with 403)"""
+        if not self.user_token:
+            print("❌ Skipping - No user token available")
+            return False
+            
+        plan_data = {
+            "name": "Unauthorized Plan",
+            "min_amount": 500,
+            "profit_percent": 10.0,
+            "duration_days": 15
+        }
+        
+        success, response = self.run_test(
+            "User Create Plan (Should Fail 403)",
+            "POST",
+            "/api/admin/plans",
+            403,
+            data=plan_data,
+            token=self.user_token
+        )
+        
+        if success:
+            print("   Correctly rejected user attempt to create plan")
+        return success
+
+    # ============ User Tests ============
+    def test_user_create_investment(self):
+        """Test POST /api/user/investments"""
+        if not self.user_token:
+            print("❌ Skipping - No user token available")
+            return False
+            
+        investment_data = {
+            "amount": 500,
+            "plan_id": "test-plan-id",
+            "status": "active"
+        }
+        
+        success, response = self.run_test(
+            "Create User Investment",
+            "POST",
+            "/api/user/investments",
+            200,
+            data=investment_data,
+            token=self.user_token
+        )
+        
+        if success:
+            print("   Investment created successfully")
+        return success
+
+    def test_user_create_transaction(self):
+        """Test POST /api/user/transactions"""
+        if not self.user_token:
+            print("❌ Skipping - No user token available")
+            return False
+            
+        transaction_data = {
+            "type": "deposit",
+            "amount": 1000,
+            "currency": "USDT",
+            "status": "pending"
+        }
+        
+        success, response = self.run_test(
+            "Create User Transaction",
+            "POST",
+            "/api/user/transactions",
+            200,
+            data=transaction_data,
+            token=self.user_token
+        )
+        
+        if success:
+            print("   Transaction created successfully")
+        return success
+
+    def test_user_get_investments(self):
+        """Test GET /api/user/my-investments"""
+        if not self.user_token:
+            print("❌ Skipping - No user token available")
+            return False
+            
+        success, response = self.run_test(
+            "Get User Investments",
+            "GET",
+            "/api/user/my-investments",
+            200,
+            token=self.user_token
+        )
+        
+        if success:
+            if isinstance(response, list):
+                print(f"   Retrieved {len(response)} investments")
+            else:
+                print("   Retrieved investments data")
+        return success
+
+    def test_user_get_transactions(self):
+        """Test GET /api/user/my-transactions"""
+        if not self.user_token:
+            print("❌ Skipping - No user token available")
+            return False
+            
+        success, response = self.run_test(
+            "Get User Transactions",
+            "GET",
+            "/api/user/my-transactions",
+            200,
+            token=self.user_token
+        )
+        
+        if success:
+            if isinstance(response, list):
+                print(f"   Retrieved {len(response)} transactions")
+            else:
+                print("   Retrieved transactions data")
+        return success
+
 def main():
     print("🚀 Starting CryptoBoost Backend API Tests")
     print("=" * 50)
