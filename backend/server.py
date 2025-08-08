@@ -6,6 +6,7 @@ from typing import Any, Dict, List, Optional
 from fastapi import FastAPI, HTTPException, Body
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel, Field, EmailStr
+from dotenv import load_dotenv
 
 # IMPORTANT:
 # - Bind handled by supervisor to 0.0.0.0:8001
